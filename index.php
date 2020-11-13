@@ -8,22 +8,11 @@
 header('Content-Type: text/plain');
 
 // reads a given CSV file, returning an array of rows
-// named based on UNIX rwx (read, write, execute)
 $csv = file_get_contents(__DIR__ . '/xlsx_data.csv');
-$csvValues = explode(PHP_EOL, $csv);
+$csvValues = explode(PHP_EOL, $csv); // array of values
 
-function parseCSV($arr){
-
-    return array_map(function($el){
-        return filterForNumbers($el);
-    },array_values(array_filter($arr, function($el){
-        return preg_match("/\*/", $el);
-    })));
-    
-}
-
-// filters out the array for names
-function filterForNumbers($str){
+// filters out the names and whitespaces out of the array
+function filterArray($str){
 
     return array_values(array_filter(explode(',',$str), function($el){
         return preg_match("/\d/", $el);
@@ -31,6 +20,18 @@ function filterForNumbers($str){
 
 }
 
+// parses the CSV 
+function parseCSV($arr){
+
+    return array_map(function($el){
+        return filterArray($el);
+    },array_values(array_filter($arr, function($el){
+        return preg_match("/\*/", $el);
+    })));
+    
+}
 
 print_r(parseCSV($csvValues));
+echo json_encode(parseCsv($csvValues));
+$JSONValues = json_encode(parseCSV($csvValues));
 ?>
